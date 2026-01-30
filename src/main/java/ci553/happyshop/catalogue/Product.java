@@ -12,12 +12,11 @@ package ci553.happyshop.catalogue;
  */
 
 public class Product implements Comparable<Product> {
-    private String proId;
-    private String proDescription;
-    private String proImageName;
-    private double unitPrice;
-    private int orderedQuantity =1; //The quantity of this product in the customer's order.
-    private int stockQuantity;//
+    private final String proId;
+    private final String proDescription;
+    private final String proImageName;
+    private final double unitPrice;
+    private final int stockQuantity;//
 
     /**
      * Constructor,used by DatabaseRW, make product from searching ResultSet
@@ -36,17 +35,11 @@ public class Product implements Comparable<Product> {
     }
 
     // a set of getter methods
-    public String getProductId() { return proId;}
-    public String getProductDescription() { return proDescription;}
-    public String getProductImageName() { return proImageName;}
-    public double getUnitPrice() { return unitPrice;}
-    public int getOrderedQuantity() { return orderedQuantity;}
-    public int getStockQuantity() { return stockQuantity;}
-
-    //a setter method
-    public void setOrderedQuantity(int orderedQuantity) {
-        this.orderedQuantity = orderedQuantity;
-    }
+    public String getProductId() { return proId; }
+    public String getProductDescription() { return proDescription; }
+    public String getProductImageName() { return proImageName; }
+    public double getUnitPrice() { return unitPrice; }
+    public int getStockQuantity() { return stockQuantity; }
 
     @Override
     public int compareTo(Product otherProduct) {

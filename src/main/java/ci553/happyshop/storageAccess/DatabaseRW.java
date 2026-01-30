@@ -1,9 +1,12 @@
 package ci553.happyshop.storageAccess;
 
 import ci553.happyshop.catalogue.Product;
+import ci553.happyshop.catalogue.trolley.Trolley;
+import ci553.happyshop.catalogue.trolley.TrolleyProduct;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The DatabaseRW interface defines the contract for interacting with the product database.
@@ -50,9 +53,9 @@ public interface DatabaseRW {
      * - If all requested quantities are available, stocks are reduced and an empty list is returned.
      * - If any product does not have sufficient stock, no stock is updated and a list of all insufficient products is returned.
      *
-     * @param proList the list of products with requested quantities to purchase
+     * @param trolley the trolley to buy
      */
-    ArrayList<Product> purchaseStocks(ArrayList<Product> proList) throws SQLException;
+    List<TrolleyProduct> purchaseStocks(Trolley trolley) throws SQLException;
 
 
     /**

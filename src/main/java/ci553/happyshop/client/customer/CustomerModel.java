@@ -2,18 +2,17 @@ package ci553.happyshop.client.customer;
 
 import ci553.happyshop.catalogue.Order;
 import ci553.happyshop.catalogue.Product;
+import ci553.happyshop.catalogue.trolley.Trolley;
+import ci553.happyshop.catalogue.trolley.TrolleyProduct;
 import ci553.happyshop.storageAccess.DatabaseRW;
 import ci553.happyshop.orderManagement.OrderHub;
 import ci553.happyshop.utility.StorageLocation;
-import ci553.happyshop.utility.ProductListFormatter;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * TODO
@@ -26,7 +25,7 @@ public class CustomerModel {
                                   //Benefits: Flexibility: Easily change the database implementation.
 
     private Product theProduct =null; // product found from search
-    private ArrayList<Product> trolley =  new ArrayList<>(); // a list of products in trolley
+    private final Trolley trolley =  new Trolley(); // the products in trolley
 
     // Four UI elements to be passed to CustomerView for display updates.
     private String imageName = "imageHolder.jpg";                // Image to show in product preview (Search Page)
@@ -64,14 +63,9 @@ public class CustomerModel {
 
     void addToTrolley(){
         if(theProduct!= null){
-
-            // trolley.add(theProduct) — Product is appended to the end of the trolley.
-            // To keep the trolley organized, add code here or call a method that:
-            //TODO
-            // 1. Merges items with the same product ID (combining their quantities).
-            // 2. Sorts the products in the trolley by product ID.
+            // find the product in the trolley, if it's already present
             trolley.add(theProduct);
-            displayTaTrolley = ProductListFormatter.buildString(trolley); //build a String for trolley so that we can show it
+            displayTaTrolley = trolley.formatNicely(); //build a String for trolley so that we can show it
         }
         else{
             displayLaSearchResult = "Please search for an available product before adding it to the trolley";
@@ -88,30 +82,30 @@ public class CustomerModel {
             // If any products are insufficient, the update will be rolled back.
             // If all products are sufficient, the database will be updated, and insufficientProducts will be empty.
             // Note: If the trolley is already organized (merged and sorted), grouping is unnecessary.
-            ArrayList<Product> groupedTrolley= groupProductsById(trolley);
-            ArrayList<Product> insufficientProducts= databaseRW.purchaseStocks(groupedTrolley);
+            List<TrolleyProduct> insufficientProducts = databaseRW.purchaseStocks(trolley);
 
             if(insufficientProducts.isEmpty()){ // If stock is sufficient for all products
                 //get OrderHub and tell it to make a new Order
                 OrderHub orderHub =OrderHub.getOrderHub();
                 Order theOrder = orderHub.newOrder(trolley);
                 trolley.clear();
-                displayTaTrolley ="";
+                displayTaTrolley = "";
                 displayTaReceipt = String.format(
                         "Order_ID: %s\nOrdered_Date_Time: %s\n%s",
                         theOrder.getOrderId(),
                         theOrder.getOrderedDateTime(),
-                        ProductListFormatter.buildString(theOrder.getProductList())
+                        theOrder.getTrolley().formatNicely()
                 );
                 System.out.println(displayTaReceipt);
             }
             else{ // Some products have insufficient stock — build an error message to inform the customer
                 StringBuilder errorMsg = new StringBuilder();
-                for(Product p : insufficientProducts){
+                for(TrolleyProduct tp : insufficientProducts) {
+                    Product p = tp.getProduct();
                     errorMsg.append("\u2022 "+ p.getProductId()).append(", ")
                             .append(p.getProductDescription()).append(" (Only ")
                             .append(p.getStockQuantity()).append(" available, ")
-                            .append(p.getOrderedQuantity()).append(" requested)\n");
+                            .append(tp.getTrolleyQuantity()).append(" requested)\n");
                 }
                 theProduct=null;
 
@@ -132,31 +126,12 @@ public class CustomerModel {
         updateView();
     }
 
-    /**
-     * Groups products by their productId to optimize database queries and updates.
-     * By grouping products, we can check the stock for a given `productId` once, rather than repeatedly
-     */
-    private ArrayList<Product> groupProductsById(ArrayList<Product> proList) {
-        Map<String, Product> grouped = new HashMap<>();
-        for (Product p : proList) {
-            String id = p.getProductId();
-            if (grouped.containsKey(id)) {
-                Product existing = grouped.get(id);
-                existing.setOrderedQuantity(existing.getOrderedQuantity() + p.getOrderedQuantity());
-            } else {
-                // Make a shallow copy to avoid modifying the original
-                grouped.put(id,new Product(p.getProductId(),p.getProductDescription(),
-                        p.getProductImageName(),p.getUnitPrice(),p.getStockQuantity()));
-            }
-        }
-        return new ArrayList<>(grouped.values());
-    }
-
     void cancel(){
         trolley.clear();
         displayTaTrolley="";
         updateView();
     }
+
     void closeReceipt(){
         displayTaReceipt="";
     }
@@ -180,7 +155,7 @@ public class CustomerModel {
      //File.toURI(): Converts a File object (a file on the filesystem) to a URI object
 
     //for test only
-    public ArrayList<Product> getTrolley() {
+    public Trolley getTrolley() {
         return trolley;
     }
 }

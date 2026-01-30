@@ -1,9 +1,12 @@
 package ci553.happyshop.storageAccess;
 
 import ci553.happyshop.catalogue.Product;
+import ci553.happyshop.catalogue.trolley.Trolley;
+import ci553.happyshop.catalogue.trolley.TrolleyProduct;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -128,9 +131,9 @@ public class DerbyRW implements DatabaseRW {
         return product;
     }
 
-    public ArrayList<Product> purchaseStocks(ArrayList<Product> proList) throws SQLException {
+    public List<TrolleyProduct> purchaseStocks(Trolley trolley) throws SQLException {
         lock.lock();  // Lock the critical section to prevent concurrent access
-        ArrayList<Product> insufficientProducts = new ArrayList<>();
+        ArrayList<TrolleyProduct> insufficientProducts = new ArrayList<>();
 
         String checkSql = "SELECT inStock FROM ProductTable WHERE productId = ?";
         String updateSql = "UPDATE ProductTable SET inStock = inStock - ? WHERE productId = ?";
@@ -145,21 +148,22 @@ public class DerbyRW implements DatabaseRW {
 
                 boolean allSufficient = true; // Flag to track if all products have sufficient stock
 
-                for (Product product : proList) {
+                for (TrolleyProduct trolleyProduct : trolley.getProducts()) {
+                    Product product = trolleyProduct.getProduct();
                     checkStmt.setString(1, product.getProductId());
                     ResultSet rs = checkStmt.executeQuery();
 
                     if (rs.next()) {
                         int currentStock = rs.getInt("inStock");
-                        int newStock = currentStock - product.getOrderedQuantity();
+                        int newStock = currentStock - trolleyProduct.getTrolleyQuantity();
 
                         // Debugging: Print values before update
                         System.out.println("Product ID: " + product.getProductId());
                         System.out.println("Before change: " + currentStock);
-                        System.out.println("Quantity Ordered: " + product.getOrderedQuantity());
+                        System.out.println("Quantity Ordered: " + trolleyProduct.getTrolleyQuantity());
 
                         if (newStock >= 0) { // Ensure stock doesn't go negative
-                            updateStmt.setInt(1, product.getOrderedQuantity());
+                            updateStmt.setInt(1, trolleyProduct.getTrolleyQuantity());
                             updateStmt.setString(2, product.getProductId());
                             updateStmt.addBatch();
 
@@ -167,7 +171,7 @@ public class DerbyRW implements DatabaseRW {
                             System.out.println("After change: " + newStock);
                             System.out.println("Update successful for Product ID: " + product.getProductId());
                         } else {
-                            insufficientProducts.add(product);
+                            insufficientProducts.add(trolleyProduct);
                             allSufficient = false; // Mark that there's at least one insufficient product
                             System.out.println("Not enough stock for Product ID: " + product.getProductId());
                         }

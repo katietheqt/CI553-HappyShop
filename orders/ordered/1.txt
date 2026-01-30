@@ -1,0 +1,14 @@
+Order ID: 1 
+State: Ordered 
+OrderedDateTime: 2026-01-30 20:32:17 
+ProgressingDateTime:  
+CollectedDateTime: 
+Items:
+ 0001    40 inch TV         ( 2) £ 538.00
+ 0002    DAB Radio          ( 4) £ 119.96
+ 0004    Watch              ( 5) £ 149.95
+ 0005    Digital Camera     ( 4) £ 359.96
+ 0008    USB2 drive         ( 4) £  31.96
+--------------------------------------------
+ Total                               £1199.83
+

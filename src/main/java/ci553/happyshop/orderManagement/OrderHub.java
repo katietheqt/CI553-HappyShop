@@ -2,6 +2,7 @@ package ci553.happyshop.orderManagement;
 
 import ci553.happyshop.catalogue.Order;
 import ci553.happyshop.catalogue.Product;
+import ci553.happyshop.catalogue.trolley.Trolley;
 import ci553.happyshop.client.orderTracker.OrderTracker;
 import ci553.happyshop.client.picker.PickerModel;
 import ci553.happyshop.storageAccess.OrderFileManager;
@@ -74,7 +75,7 @@ public class OrderHub  {
 
     //Creates a new order using the provided list of products.
     //and also notify picker and orderTracker
-    public Order newOrder(ArrayList<Product> trolley) throws IOException, SQLException {
+    public Order newOrder(Trolley trolley) throws IOException, SQLException {
         int orderId = OrderCounter.generateOrderId(); //get unique orderId
         String orderedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         //make an Order Object: id, Ordered_state, orderedDateTime, and productsList(trolley)
