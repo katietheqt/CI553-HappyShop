@@ -1,11 +1,7 @@
 package ci553.happyshop.catalogue;
 
 import ci553.happyshop.catalogue.trolley.Trolley;
-import ci553.happyshop.catalogue.trolley.TrolleyProduct;
 import ci553.happyshop.orderManagement.OrderState;
-import ci553.happyshop.utility.ProductListFormatter;
-
-import java.util.List;
 
 /**
  * The Order class represents a customer order, including metadata and a list of ordered products.
@@ -33,7 +29,7 @@ import java.util.List;
  */
 
 public class Order {
-    private int orderId;
+    private final int orderId;
     private OrderState state;
     private String orderedDateTime = "";
     private String progressingDateTime = "";

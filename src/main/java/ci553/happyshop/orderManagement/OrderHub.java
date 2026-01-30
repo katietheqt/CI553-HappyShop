@@ -48,7 +48,7 @@ public class OrderHub  {
     private final Path progressingPath = StorageLocation.progressingPath;
     private final Path collectedPath = StorageLocation.collectedPath;
 
-    private TreeMap<Integer,OrderState> orderMap = new TreeMap<>();
+    private final TreeMap<Integer,OrderState> orderMap = new TreeMap<>();
     private TreeMap<Integer,OrderState> OrderedOrderMap = new TreeMap<>();
     private TreeMap<Integer,OrderState> progressingOrderMap = new TreeMap<>();
 
@@ -60,8 +60,8 @@ public class OrderHub  {
      *   but collected orders are shown for a limited time (10 seconds).
      * - PickerModels will be notified only of orders in the "ordered" or "progressing" states, filtering out collected orders.
      */
-    private ArrayList<OrderTracker> orderTrackerList = new ArrayList<>();
-    private ArrayList<PickerModel> pickerModelList = new ArrayList<>();
+    private final ArrayList<OrderTracker> orderTrackerList = new ArrayList<>();
+    private final ArrayList<PickerModel> pickerModelList = new ArrayList<>();
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -70,7 +70,7 @@ public class OrderHub  {
     public static OrderHub getOrderHub() {
         if (orderHub == null)
             orderHub = new OrderHub();
-            return orderHub;
+        return orderHub;
     }
 
     //Creates a new order using the provided list of products.
@@ -83,8 +83,7 @@ public class OrderHub  {
 
         //write order details to file for the orderId in orderedPath (ie. orders/ordered)
         String orderDetail = theOrder.orderDetails();
-        Path path = orderedPath;
-        OrderFileManager.createOrderFile(path, orderId, orderDetail);
+        OrderFileManager.createOrderFile(orderedPath, orderId, orderDetail);
 
         orderMap.put(orderId, theOrder.getState()); //add the order to orderMap,state is Ordered initially
         notifyOrderTrackers(); //notify OrderTrackers
@@ -158,7 +157,7 @@ public class OrderHub  {
 
     /**
      * Removes collected orders from the system after they have been collected for 10 seconds.
-     *
+     * <p>
      * This ensures that collected orders are cleared from the active order pool and are no longer displayed
      * by the OrderTracker after the brief period. This keeps the system focused on orders in the
      * "ordered" and "progressing" states.
@@ -190,16 +189,19 @@ public class OrderHub  {
     public void initializeOrderMap(){
         ArrayList<Integer> orderedIds = orderIdsLoader(orderedPath);
         ArrayList<Integer> progressingIds = orderIdsLoader(progressingPath);
-        if(orderedIds.size()>0){
+
+        if(!orderedIds.isEmpty()){
             for(Integer orderId : orderedIds){
                 orderMap.put(orderId, OrderState.Ordered);
             }
         }
-        if(progressingIds.size()>0){
+
+        if(!progressingIds.isEmpty()){
             for(Integer orderId : progressingIds){
                 orderMap.put(orderId, OrderState.Progressing);
             }
         }
+
         notifyOrderTrackers();
         notifyPickerModels();
         System.out.println("orderMap initilized. "+ orderMap.size() + " orders in total, including:");

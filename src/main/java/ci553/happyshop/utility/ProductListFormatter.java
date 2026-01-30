@@ -1,8 +1,6 @@
 package ci553.happyshop.utility;
 
-import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.catalogue.trolley.Trolley;
-import ci553.happyshop.catalogue.trolley.TrolleyProduct;
 
 /**
  * This class builds a formatted, receipt-like summary from a list of products.

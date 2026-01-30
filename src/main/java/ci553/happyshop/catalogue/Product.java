@@ -2,7 +2,7 @@ package ci553.happyshop.catalogue;
 
 /**
  * The Product class used to hold the information about a product:
- *
+ * <p>
  * Fields:
  * - productId: Unique identifier for the product (eg 0001).
  * - description: Textual description of the product.
@@ -51,28 +51,8 @@ public class Product implements Comparable<Product> {
     // Creates a formatted string containing ID, price (with 2 decimal places), stock amount, and description
     // Used in the Warehouse search page to display searched product information
     public String toString() {
-        String productInfo = String.format("Id: %s, £%.2f/uint, stock: %d \n%s",
+        return String.format("Id: %s, £%.2f/uint, stock: %d \n%s",
                           proId, unitPrice,stockQuantity,proDescription);
-        return productInfo;
     }
-
-    /** alternative constructors retained for possible future use.
-     *
-    public Product(String id, String des, double aPrice, int orderedQuantity, int stockQuantity) {
-        proId = id;
-        proDescription = des;
-        unitPrice = aPrice;
-        this.orderedQuantity = orderedQuantity;
-        this.stockQuantity = stockQuantity;
-    }
-
-    public Product(String id, String des, double aPrice, int orderedQuantity) {
-        proId = id;
-        proDescription = des;
-        unitPrice = aPrice;
-        this.orderedQuantity = orderedQuantity;
-    }
-     */
-
 }
 

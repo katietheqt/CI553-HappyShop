@@ -102,7 +102,7 @@ public class CustomerModel {
                 StringBuilder errorMsg = new StringBuilder();
                 for(TrolleyProduct tp : insufficientProducts) {
                     Product p = tp.getProduct();
-                    errorMsg.append("\u2022 "+ p.getProductId()).append(", ")
+                    errorMsg.append("• ").append(p.getProductId()).append(", ")
                             .append(p.getProductDescription()).append(" (Only ")
                             .append(p.getStockQuantity()).append(" available, ")
                             .append(tp.getTrolleyQuantity()).append(" requested)\n");
@@ -115,7 +115,7 @@ public class CustomerModel {
                 // 2. Trigger a message window to notify the customer about the insufficient stock, rather than directly changing displayLaSearchResult.
                 //You can use the provided RemoveProductNotifier class and its showRemovalMsg method for this purpose.
                 //remember close the message window where appropriate (using method closeNotifierWindow() of RemoveProductNotifier class)
-                displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg.toString();
+                displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg;
                 System.out.println("stock is not enough");
             }
         }
