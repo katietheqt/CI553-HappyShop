@@ -1,7 +1,6 @@
 package ci553.happyshop.orderManagement;
 
 import ci553.happyshop.catalogue.Order;
-import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.catalogue.trolley.Trolley;
 import ci553.happyshop.client.orderTracker.OrderTracker;
 import ci553.happyshop.client.picker.PickerModel;

@@ -65,7 +65,7 @@ public class CustomerModel {
         if(theProduct!= null){
             // find the product in the trolley, if it's already present
             trolley.add(theProduct);
-            displayTaTrolley = trolley.formatNicely(); //build a String for trolley so that we can show it
+            updateTrolleyDisplay();
         }
         else{
             displayLaSearchResult = "Please search for an available product before adding it to the trolley";
@@ -73,6 +73,16 @@ public class CustomerModel {
         }
         displayTaReceipt=""; // Clear receipt to switch back to trolleyPage (receipt shows only when not empty)
         updateView();
+    }
+
+    void updateTrolleyDisplay() {
+        if (trolley.isEmpty()) {
+            // show blank text if trolley is empty
+            displayTaTrolley = "";
+        } else {
+            // otherwise display trolley content
+            displayTaTrolley = trolley.formatNicely(); //build a String for trolley so that we can show it
+        }
     }
 
     void checkOut() throws IOException, SQLException {
@@ -109,14 +119,17 @@ public class CustomerModel {
                 }
                 theProduct=null;
 
-                //TODO
-                // Add the following logic here:
-                // 1. Remove products with insufficient stock from the trolley.
-                // 2. Trigger a message window to notify the customer about the insufficient stock, rather than directly changing displayLaSearchResult.
-                //You can use the provided RemoveProductNotifier class and its showRemovalMsg method for this purpose.
-                //remember close the message window where appropriate (using method closeNotifierWindow() of RemoveProductNotifier class)
-                displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg;
-                System.out.println("stock is not enough");
+                // remove products that couldn't be found from the trolley
+                for (TrolleyProduct tp : insufficientProducts) {
+                    trolley.remove(tp.getProduct().getProductId());
+                }
+
+                // show a popup listing items that aren't available
+                RemoveProductNotifier notifier = new RemoveProductNotifier(this.cusView);
+                notifier.showRemovalMsg("Checkout failed due to insufficient stock for the following products:\n" + errorMsg);
+
+                // update displayed trolley contents
+                updateTrolleyDisplay();
             }
         }
         else{

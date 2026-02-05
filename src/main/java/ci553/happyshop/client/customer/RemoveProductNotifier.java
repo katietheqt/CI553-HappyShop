@@ -32,7 +32,7 @@ import javafx.stage.Stage;
  */
 
 public class RemoveProductNotifier {
-    public CustomerView cusView; //tracking the window of cusView
+    private final CustomerView cusView; //tracking the window of cusView
 
     private static int WIDTH = UIStyle.removeProNotifierWinWidth;
     private static int HEIGHT = UIStyle.removeProNotifierWinHeight;
@@ -40,6 +40,10 @@ public class RemoveProductNotifier {
     private Stage window; //window for ProductRemovalNotifier
     private Scene scene; // Scene for ProductRemovalNotifier
     private TextArea taRemoveMsg;// TextArea to display removal products messages
+
+    public RemoveProductNotifier(CustomerView cusView) {
+        this.cusView = cusView;
+    }
 
     // Create the Scene (only once)
     private void createScene() {

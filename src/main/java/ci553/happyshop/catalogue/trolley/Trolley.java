@@ -2,10 +2,7 @@ package ci553.happyshop.catalogue.trolley;
 
 import ci553.happyshop.catalogue.Product;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Wrapper for the trolley. Stores a sorted list of {@link TrolleyProduct}s.
@@ -35,6 +32,15 @@ public class Trolley {
         // it's not present, add it and then sort by ID.
         products.add(new TrolleyProduct(product));
         products.sort(Comparator.comparing(TrolleyProduct::getProduct));
+    }
+
+    /**
+     * Removes all of a product from the trolley (by ID).
+     *
+     * @param productId the ID of the product to remove
+     */
+    public void remove(String productId) {
+        products.removeIf(product -> product.getProduct().getProductId().equals(productId));
     }
 
     /**
