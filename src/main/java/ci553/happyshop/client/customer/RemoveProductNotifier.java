@@ -15,15 +15,13 @@ import javafx.stage.Stage;
 /**
  * The RemoveProductNotifier class provides a dependent window that displays messages
  * and suggested actions to the customer when certain products are removed from their trolley.
- *
+ * <p>
  * It is triggered by the CustomerModel when the customer submits a trolley that includes
  * products exceeding available stock.
- *
+ * <p>
  * This window tracks the position of the main CustomerView window to appear nearby,
  * maintaining a cohesive and user-friendly interface.
- */
-
-/**
+ * <p>
  * - The scene is created only once to avoid unnecessary recreation of the same layout.
  * - The window is created and shown only when needed. If the window is already open, it will be brought to the front.
  * - The `window` and `scene` are managed separately, allowing the scene to be reused while creating the window as needed.
@@ -34,8 +32,8 @@ import javafx.stage.Stage;
 public class RemoveProductNotifier {
     private final CustomerView cusView; //tracking the window of cusView
 
-    private static int WIDTH = UIStyle.removeProNotifierWinWidth;
-    private static int HEIGHT = UIStyle.removeProNotifierWinHeight;
+    private static final int WIDTH = UIStyle.removeProNotifierWinWidth;
+    private static final int HEIGHT = UIStyle.removeProNotifierWinHeight;
 
     private Stage window; //window for ProductRemovalNotifier
     private Scene scene; // Scene for ProductRemovalNotifier
@@ -56,15 +54,13 @@ public class RemoveProductNotifier {
         taRemoveMsg.setPrefHeight(80);
         taRemoveMsg.setStyle(UIStyle.alertContentTextAreaStyle);
 
-        Label laCustomerAction = new Label(cutomerActionBuilder());
+        Label laCustomerAction = new Label(customerActionBuilder());
         laCustomerAction.setWrapText(true);
         laCustomerAction.setStyle(UIStyle.alertContentUserActionStyle);
 
         Button btnOk = new Button("Ok");
         btnOk.setStyle(UIStyle.alertBtnStyle);
-        btnOk.setOnAction(e -> {
-            window.close();
-        });
+        btnOk.setOnAction(e -> window.close());
 
         // HBox: Customer action Label + OK button
         HBox hbCustomerAction = new HBox(20, laCustomerAction, btnOk);
@@ -83,13 +79,12 @@ public class RemoveProductNotifier {
         scene = new Scene(pane, WIDTH, HEIGHT);
     }
 
-    private String cutomerActionBuilder(){
-        StringBuilder actions = new StringBuilder(" \u26A1 You can now: \n");
-        actions.append("\u2022 Checkout your trolley as it is \n");
-        actions.append("\u2022 Re-add the removed products (up to the available quantity) \n");
-        actions.append("\u2022 Or cancel your trolley if you no longer wish to proceed.\n");
-        actions.append("Thank you for understanding! \n");
-        return  actions.toString();
+    private String customerActionBuilder(){
+        return  " ⚡ You can now: \n" +
+                "• Checkout your trolley as it is \n" +
+                "• Re-add the removed products (up to the available quantity) \n" +
+                "• Or cancel your trolley if you no longer wish to proceed.\n" +
+                "Thank you for understanding! \n";
     }
 
     // Create the window if not exists
