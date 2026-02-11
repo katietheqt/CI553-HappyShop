@@ -16,7 +16,7 @@ public class Product implements Comparable<Product> {
     private final String proDescription;
     private final String proImageName;
     private final double unitPrice;
-    private final int stockQuantity;//
+    private final int stockQuantity;
 
     /**
      * Constructor,used by DatabaseRW, make product from searching ResultSet

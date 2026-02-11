@@ -40,7 +40,11 @@ public class Trolley {
      * @param productId the ID of the product to remove
      */
     public void remove(String productId) {
-        products.removeIf(product -> product.getProduct().getProductId().equals(productId));
+        boolean didRemove = products.removeIf(product -> product.getProduct().getProductId().equals(productId));
+
+        if (!didRemove) {
+            throw new NoSuchElementException("tried to remove product " + productId + " that isn't in trolley");
+        }
     }
 
     /**

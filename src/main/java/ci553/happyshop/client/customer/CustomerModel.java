@@ -38,20 +38,25 @@ public class CustomerModel {
         String productId = cusView.tfId.getText().trim();
         if(!productId.isEmpty()){
             theProduct = databaseRW.searchByProductId(productId); //search database
-            if(theProduct != null && theProduct.getStockQuantity()>0){
+            if (theProduct == null) {
+                displayLaSearchResult = "No Product was found with ID " + productId;
+                System.out.println("No Product was found with ID " + productId);
+            } else {
                 double unitPrice = theProduct.getUnitPrice();
                 String description = theProduct.getProductDescription();
                 int stock = theProduct.getStockQuantity();
 
                 String baseInfo = String.format("Product_Id: %s\n%s,\nPrice: £%.2f", productId, description, unitPrice);
-                String quantityInfo = stock < 100 ? String.format("\n%d units left.", stock) : "";
+                String quantityInfo = "";
+
+                if (stock == 0) {
+                    quantityInfo = "\nOut of stock";
+                } else if (stock < 100) {
+                    quantityInfo = String.format("\n%d units left.", stock);
+                }
+
                 displayLaSearchResult = baseInfo + quantityInfo;
                 System.out.println(displayLaSearchResult);
-            }
-            else{
-                theProduct=null;
-                displayLaSearchResult = "No Product was found with ID " + productId;
-                System.out.println("No Product was found with ID " + productId);
             }
         }else{
             theProduct=null;
@@ -62,14 +67,16 @@ public class CustomerModel {
     }
 
     void addToTrolley(){
-        if(theProduct!= null){
+        if (theProduct == null) {
+            displayLaSearchResult = "Please search for an available product before adding it to the trolley";
+            System.out.println("must search and get an available product before add to trolley");
+        } else if (theProduct.getStockQuantity() <= 0) {
+            displayLaSearchResult = "Product is out of stock";
+            System.out.println("tried to add out of stock product to trolley");
+        } else {
             // find the product in the trolley, if it's already present
             trolley.add(theProduct);
             updateTrolleyDisplay();
-        }
-        else{
-            displayLaSearchResult = "Please search for an available product before adding it to the trolley";
-            System.out.println("must search and get an available product before add to trolley");
         }
         displayTaReceipt=""; // Clear receipt to switch back to trolleyPage (receipt shows only when not empty)
         updateView();
@@ -98,7 +105,6 @@ public class CustomerModel {
                 //get OrderHub and tell it to make a new Order
                 OrderHub orderHub =OrderHub.getOrderHub();
                 Order theOrder = orderHub.newOrder(trolley);
-                trolley.clear();
                 displayTaTrolley = "";
                 displayTaReceipt = String.format(
                         "Order_ID: %s\nOrdered_Date_Time: %s\n%s",
@@ -106,6 +112,7 @@ public class CustomerModel {
                         theOrder.getOrderedDateTime(),
                         theOrder.getTrolley().formatNicely()
                 );
+                trolley.clear();
                 System.out.println(displayTaReceipt);
             }
             else{ // Some products have insufficient stock — build an error message to inform the customer
@@ -161,7 +168,9 @@ public class CustomerModel {
         else{
             imageName = "imageHolder.jpg";
         }
-        cusView.update(imageName, displayLaSearchResult, displayTaTrolley,displayTaReceipt);
+
+        boolean inStock = theProduct != null && theProduct.getStockQuantity() > 0;
+        cusView.update(imageName, displayLaSearchResult, displayTaTrolley,displayTaReceipt, inStock);
     }
      // extra notes:
      //Path.toUri(): Converts a Path object (a file or a directory path) to a URI object.
