@@ -34,4 +34,14 @@ public class TrolleyProduct {
     public void setTrolleyQuantity(int trolleyQuantity) {
         this.trolleyQuantity = trolleyQuantity;
     }
+
+    public String formatNicely() {
+        Product pr = getProduct();
+        return String.format("%-7s %-18.18s (%2d) £%7.2f",
+                pr.getProductId(),
+                pr.getProductDescription(),
+                trolleyQuantity,
+                pr.getUnitPrice() * trolleyQuantity
+        );
+    }
 }

@@ -1,5 +1,7 @@
 package ci553.happyshop.client.customer;
 
+import ci553.happyshop.catalogue.trolley.Trolley;
+import ci553.happyshop.catalogue.trolley.TrolleyProduct;
 import ci553.happyshop.utility.UIStyle;
 import ci553.happyshop.utility.WinPosManager;
 import ci553.happyshop.utility.WindowBounds;
@@ -36,6 +38,7 @@ public class CustomerView  {
     private HBox hbRoot; // Top-level layout manager
     private VBox vbTrolleyPage;  //vbTrolleyPage and vbReceiptPage will swap with each other when need
     private VBox vbReceiptPage;
+    private ListView<HBox> lvTrolley;
 
     TextField tfId; //for user input on the search page. Made accessible so it can be accessed or modified by CustomerModel
     TextField tfName; //for user input on the search page. Made accessible so it can be accessed by CustomerModel
@@ -43,7 +46,6 @@ public class CustomerView  {
     //four controllers needs updating when program going on
     private ImageView ivProduct; //image area in searchPage
     private Label lbProductInfo;//product text info in searchPage
-    private TextArea taTrolley; //in trolley Page
     private TextArea taReceipt;//in receipt page
     private Button btnAddToTrolley; // in search area
 
@@ -69,6 +71,7 @@ public class CustomerView  {
         hbRoot.setStyle(UIStyle.rootStyle);
 
         Scene scene = new Scene(hbRoot, WIDTH, HEIGHT);
+        scene.getStylesheets().add("style.css");
         window.setScene(scene);
         window.setTitle("🛒 HappyShop Customer Client");
         WinPosManager.registerWindow(window,WIDTH,HEIGHT); //calculate position x and y for this window
@@ -128,9 +131,9 @@ public class CustomerView  {
         Label laPageTitle = new Label("🛒🛒  Trolley 🛒🛒");
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
 
-        taTrolley = new TextArea();
-        taTrolley.setEditable(false);
-        taTrolley.setPrefSize(WIDTH/2, HEIGHT-50);
+        lvTrolley = new ListView<>();
+        lvTrolley.setPrefSize(WIDTH / 2, HEIGHT - 50);
+        lvTrolley.setId("trolley");
 
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(this::buttonClicked);
@@ -144,7 +147,7 @@ public class CustomerView  {
         hbBtns.setStyle("-fx-padding: 15px;");
         hbBtns.setAlignment(Pos.CENTER);
 
-        vbTrolleyPage = new VBox(15, laPageTitle, taTrolley, hbBtns);
+        vbTrolleyPage = new VBox(15, laPageTitle, lvTrolley, hbBtns);
         vbTrolleyPage.setPrefWidth(COLUMN_WIDTH);
         vbTrolleyPage.setAlignment(Pos.TOP_CENTER);
         vbTrolleyPage.setStyle("-fx-padding: 15px;");
@@ -191,14 +194,58 @@ public class CustomerView  {
         }
     }
 
+    private void updateTrolley(Trolley trolley) {
+        lvTrolley.getItems().clear();
+        double totalPrice = 0;
 
-    public void update(String imageName, String searchResult, String trolley, String receipt, boolean inStock) {
+        for (TrolleyProduct product : trolley.getProducts()) {
+            HBox trolleyEntry = new HBox();
+            HBox.setHgrow(trolleyEntry, Priority.ALWAYS);
+
+            Label label = new Label(product.formatNicely());
+            trolleyEntry.getChildren().add(label);
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            trolleyEntry.getChildren().add(spacer);
+
+            Button deleteButton = new Button("-");
+            deleteButton.setAlignment(Pos.TOP_RIGHT);
+            deleteButton.setStyle(UIStyle.buttonStyle);
+            deleteButton.setOnMouseClicked(event -> {
+                System.out.println("clicked remove button :D");
+
+                // remove from trolley
+                trolley.remove(product.getProduct().getProductId());
+
+                // update view
+                updateTrolley(trolley);
+            });
+
+            trolleyEntry.getChildren().add(deleteButton);
+
+            lvTrolley.getItems().add(trolleyEntry);
+
+            totalPrice += product.getTrolleyQuantity() * product.getProduct().getUnitPrice();
+        }
+
+        if (!trolley.isEmpty()) {
+            String totalPriceStr = String.format(" %-35s £%7.2f\n", "Total", totalPrice);
+            Label totalPriceLabel = new Label(totalPriceStr);
+            HBox totalPriceBox = new HBox(totalPriceLabel);
+            lvTrolley.getItems().add(totalPriceBox);
+        }
+    }
+
+    public void update(String imageName, String searchResult, Trolley trolley, String receipt, boolean inStock) {
         btnAddToTrolley.setDisable(!inStock);
 
         ivProduct.setImage(new Image(imageName));
         lbProductInfo.setText(searchResult);
-        taTrolley.setText(trolley);
-        if (!receipt.equals("")) {
+
+        updateTrolley(trolley);
+
+        if (!receipt.isEmpty()) {
             showTrolleyOrReceiptPage(vbReceiptPage);
             taReceipt.setText(receipt);
         }

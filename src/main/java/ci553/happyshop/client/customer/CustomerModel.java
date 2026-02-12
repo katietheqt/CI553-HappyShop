@@ -170,7 +170,7 @@ public class CustomerModel {
         }
 
         boolean inStock = theProduct != null && theProduct.getStockQuantity() > 0;
-        cusView.update(imageName, displayLaSearchResult, displayTaTrolley,displayTaReceipt, inStock);
+        cusView.update(imageName, displayLaSearchResult, trolley, displayTaReceipt, inStock);
     }
      // extra notes:
      //Path.toUri(): Converts a Path object (a file or a directory path) to a URI object.
