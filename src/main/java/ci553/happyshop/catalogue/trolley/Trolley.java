@@ -101,4 +101,16 @@ public class Trolley {
         sb.append(total);
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Trolley trolley = (Trolley) o;
+        return Objects.equals(products, trolley.products);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(products);
+    }
 }

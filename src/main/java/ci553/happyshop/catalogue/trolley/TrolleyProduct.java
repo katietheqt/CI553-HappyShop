@@ -2,6 +2,8 @@ package ci553.happyshop.catalogue.trolley;
 
 import ci553.happyshop.catalogue.Product;
 
+import java.util.Objects;
+
 /**
  * A product that is stored within a {@link Trolley}. Contains a trolley quantity.
  * <p>
@@ -43,5 +45,17 @@ public class TrolleyProduct {
                 trolleyQuantity,
                 pr.getUnitPrice() * trolleyQuantity
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TrolleyProduct product1 = (TrolleyProduct) o;
+        return trolleyQuantity == product1.trolleyQuantity && Objects.equals(product, product1.product);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(product, trolleyQuantity);
     }
 }

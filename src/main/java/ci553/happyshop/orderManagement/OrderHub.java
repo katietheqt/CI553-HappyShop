@@ -65,7 +65,11 @@ public class OrderHub  {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     //Singleton pattern
-    private OrderHub() {}
+
+    /**
+     * Visible for testing purposes.
+     */
+    public OrderHub() {}
     public static OrderHub getOrderHub() {
         if (orderHub == null)
             orderHub = new OrderHub();

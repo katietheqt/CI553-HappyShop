@@ -1,5 +1,7 @@
 package ci553.happyshop.catalogue;
 
+import java.util.Objects;
+
 /**
  * The Product class used to hold the information about a product:
  * <p>
@@ -9,8 +11,9 @@ package ci553.happyshop.catalogue;
  * - unitPrice: Price per single unit of the product.
  * - orderedQuantity: Quantity involved in a customer's order.
  * - stockQuantity: Quantity currently available in stock.
+ * <p>
+ * Note: this class has a natural ordering that is inconsistent with equals.
  */
-
 public class Product implements Comparable<Product> {
     private final String proId;
     private final String proDescription;
@@ -53,6 +56,18 @@ public class Product implements Comparable<Product> {
     public String toString() {
         return String.format("Id: %s, £%.2f/uint, stock: %d \n%s",
                           proId, unitPrice,stockQuantity,proDescription);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Double.compare(unitPrice, product.unitPrice) == 0 && stockQuantity == product.stockQuantity && Objects.equals(proId, product.proId) && Objects.equals(proDescription, product.proDescription) && Objects.equals(proImageName, product.proImageName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(proId, proDescription, proImageName, unitPrice, stockQuantity);
     }
 }
 

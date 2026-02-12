@@ -207,7 +207,7 @@ public class CustomerView  {
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
-            trolleyEntry.getChildren().add(spacer);
+            trolleyEntry.getChildren().add(spacer); // ensure button is padded to right side
 
             Button deleteButton = new Button("-");
             deleteButton.setAlignment(Pos.TOP_RIGHT);
